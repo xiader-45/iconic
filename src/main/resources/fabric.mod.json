@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "iconic",
+  "version": "${version}",
+  "name": "Iconic",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/iconic/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.iconic.client.IconicClient"
+    ],
+    "main": [
+      "com.iconic.Iconic"
+    ]
+  },
+  "mixins": [
+    "iconic.mixins.json",
+    {
+      "config": "iconic.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
