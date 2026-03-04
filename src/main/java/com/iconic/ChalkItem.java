@@ -33,118 +33,82 @@ public class ChalkItem extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         var world = context.getWorld();
         var player = context.getPlayer();
-
         if (player == null) return ActionResult.PASS;
 
         BlockPos pos = context.getBlockPos();
         Direction side = context.getSide();
-        BlockState state = world.getBlockState(pos);
-
-        Vec3d spawnPos = Vec3d.ofCenter(pos).add(
-                side.getOffsetX() * Iconic.CHALK_OFFSET,
-                side.getOffsetY() * Iconic.CHALK_OFFSET,
-                side.getOffsetZ() * Iconic.CHALK_OFFSET
-        );
-
+        Vec3d spawnPos = Vec3d.ofCenter(pos).add(side.getOffsetX() * Iconic.CHALK_OFFSET, side.getOffsetY() * Iconic.CHALK_OFFSET, side.getOffsetZ() * Iconic.CHALK_OFFSET);
         Box searchBox = Box.of(spawnPos, 0.1, 0.1, 0.1);
 
-        // Фикс анимации для стирания
         List<DisplayEntity.ItemDisplayEntity> existingDisplays = world.getEntitiesByClass(
-                DisplayEntity.ItemDisplayEntity.class,
-                searchBox,
+                DisplayEntity.ItemDisplayEntity.class, searchBox,
                 entity -> world.isClient() || entity.getCommandTags().contains("iconic_chalk")
         );
 
         if (player.isSneaking()) {
             if (!existingDisplays.isEmpty()) {
                 if (!world.isClient()) {
-                    existingDisplays.getFirst().discard();
-
+                    DisplayEntity.ItemDisplayEntity chalk = existingDisplays.getFirst();
                     List<DisplayEntity.ItemDisplayEntity> bgs = world.getEntitiesByClass(
                             DisplayEntity.ItemDisplayEntity.class, searchBox,
                             e -> e.getCommandTags().contains("iconic_chalk_bg"));
-                    if (!bgs.isEmpty()) {
+
+                    if (chalk.getCommandTags().contains("glowing")) {
+                        chalk.setBrightness(null);
+                        chalk.removeCommandTag("glowing");
+                        if (!bgs.isEmpty()) {
+                            bgs.getFirst().setBrightness(null);
+                            bgs.getFirst().removeCommandTag("glowing");
+                        }
+                    } else if (!bgs.isEmpty()) {
                         bgs.getFirst().discard();
+                    } else {
+                        chalk.discard();
                     }
-
                     world.playSound(null, pos, SoundEvents.ITEM_BRUSH_BRUSHING_GENERIC, SoundCategory.BLOCKS, 1.0F, 1.0F);
-
-                    if (world instanceof ServerWorld serverWorld) {
-                        serverWorld.spawnParticles(ParticleTypes.WHITE_ASH, spawnPos.x, spawnPos.y, spawnPos.z,
-                                10, 0.15, 0.15, 0.15, 0.05);
-                    }
                 }
                 return ActionResult.SUCCESS;
             }
         }
 
-        ItemStack stackInOffHand = player.getOffHandStack();
+        ItemStack offHand = player.getOffHandStack();
+        if (offHand.isEmpty()) {
+            if (!world.isClient()) player.sendMessage(Text.translatable("message.iconic.empty_offhand"), true);
+            return ActionResult.FAIL;
+        }
 
-        if (stackInOffHand.isEmpty()) {
-            if (!world.isClient()) {
-                player.sendMessage(Text.literal("Возьмите предмет в левую руку!"), true);
+        BlockState state = world.getBlockState(pos);
+        if (!state.isSideSolidFullSquare(world, pos, side) && !(state.getBlock() instanceof AbstractChestBlock)) return ActionResult.FAIL;
+        if (!existingDisplays.isEmpty()) return ActionResult.FAIL;
+
+        if (!world.isClient()) {
+            DisplayEntity.ItemDisplayEntity itemDisplay = new DisplayEntity.ItemDisplayEntity(EntityType.ITEM_DISPLAY, world);
+            itemDisplay.setItemStack(offHand.copy());
+            itemDisplay.setItemDisplayContext(ItemDisplayContext.GUI);
+            itemDisplay.refreshPositionAndAngles(spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
+            itemDisplay.setTransformation(new AffineTransformation(null, getRotationForSide(side, player.getHorizontalFacing()), new Vector3f(0.7f, 0.7f, 0.001f), null));
+            itemDisplay.addCommandTag("iconic_chalk");
+            itemDisplay.addCommandTag("chalk_dir_" + side.name());
+            itemDisplay.addCommandTag("chalk_facing_" + player.getHorizontalFacing().name());
+            world.spawnEntity(itemDisplay);
+
+            world.playSound(null, pos, SoundEvents.BLOCK_CALCITE_PLACE, SoundCategory.BLOCKS, 1.0F, 1.2F);
+            if (world instanceof ServerWorld serverWorld) {
+                serverWorld.spawnParticles(ParticleTypes.WHITE_ASH, spawnPos.x, spawnPos.y, spawnPos.z,
+                        25, 0.15, 0.15, 0.15, 0.05);
             }
-            return ActionResult.FAIL;
+            context.getStack().damage(1, player, net.minecraft.entity.EquipmentSlot.MAINHAND);
         }
-
-        boolean isSolidSquare = state.isSideSolidFullSquare(world, pos, side);
-        boolean isChest = state.getBlock() instanceof AbstractChestBlock;
-
-        if (!isSolidSquare && !isChest) {
-            return ActionResult.FAIL;
-        }
-
-        if (!existingDisplays.isEmpty()) {
-            return ActionResult.FAIL;
-        }
-
-        if (world.isClient()) {
-            return ActionResult.SUCCESS;
-        }
-
-        Direction playerFacing = player.getHorizontalFacing();
-
-        DisplayEntity.ItemDisplayEntity itemDisplay = new DisplayEntity.ItemDisplayEntity(EntityType.ITEM_DISPLAY, world);
-        itemDisplay.setItemStack(stackInOffHand.copy());
-        itemDisplay.setItemDisplayContext(ItemDisplayContext.GUI);
-
-        itemDisplay.refreshPositionAndAngles(spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
-
-        float randomTilt = (world.getRandom().nextFloat() - 0.5f) * 0.4f;
-
-        itemDisplay.setTransformation(new AffineTransformation(
-                null,
-                getRotationForSide(side, playerFacing, randomTilt),
-                new Vector3f(0.7f, 0.7f, 0.001f),
-                null
-        ));
-
-        itemDisplay.addCommandTag("iconic_chalk");
-        itemDisplay.addCommandTag("chalk_dir_" + side.name());
-        itemDisplay.addCommandTag("chalk_tilt_" + randomTilt);
-        itemDisplay.addCommandTag("chalk_facing_" + playerFacing.name());
-
-        world.spawnEntity(itemDisplay);
-
-        world.playSound(null, pos, SoundEvents.BLOCK_CALCITE_PLACE, SoundCategory.BLOCKS, 1.0F, 1.2F);
-
-        if (world instanceof ServerWorld serverWorld) {
-            serverWorld.spawnParticles(ParticleTypes.WHITE_ASH, spawnPos.x, spawnPos.y, spawnPos.z,
-                    25, 0.15, 0.15, 0.15, 0.05);
-        }
-
-        context.getStack().damage(1, player, net.minecraft.entity.EquipmentSlot.MAINHAND);
-
         return ActionResult.SUCCESS;
     }
 
-    private Quaternionf getRotationForSide(Direction side, Direction playerFacing, float randomTilt) {
+    private Quaternionf getRotationForSide(Direction side, Direction playerFacing) {
         Quaternionf rotation = new Quaternionf();
         switch (side) {
-            case NORTH -> rotation.rotationY(0).rotateZ(randomTilt);
-            case SOUTH -> rotation.rotationY((float) Math.toRadians(180)).rotateZ(randomTilt);
-            case EAST -> rotation.rotationY((float) Math.toRadians(270)).rotateZ(randomTilt);
-            case WEST -> rotation.rotationY((float) Math.toRadians(90)).rotateZ(randomTilt);
+            case NORTH -> rotation.rotationY(0);
+            case SOUTH -> rotation.rotationY((float) Math.toRadians(180));
+            case EAST -> rotation.rotationY((float) Math.toRadians(270));
+            case WEST -> rotation.rotationY((float) Math.toRadians(90));
             case UP -> {
                 rotation.rotationX((float) Math.toRadians(90));
                 switch (playerFacing) {
@@ -153,17 +117,15 @@ public class ChalkItem extends Item {
                     case SOUTH -> rotation.rotateZ(0);
                     case WEST -> rotation.rotateZ((float) Math.toRadians(90));
                 }
-                rotation.rotateZ(randomTilt);
             }
             case DOWN -> {
                 rotation.rotationX((float) Math.toRadians(-90));
                 switch (playerFacing) {
-                    case NORTH -> rotation.rotateZ(0);
-                    case EAST -> rotation.rotateZ((float) Math.toRadians(-90));
-                    case SOUTH -> rotation.rotateZ((float) Math.toRadians(180));
-                    case WEST -> rotation.rotateZ((float) Math.toRadians(90));
+                    case NORTH -> rotation.rotateZ((float) Math.toRadians(180));
+                    case EAST -> rotation.rotateZ((float) Math.toRadians(90));
+                    case SOUTH -> rotation.rotateZ(0);
+                    case WEST -> rotation.rotateZ((float) Math.toRadians(-90));
                 }
-                rotation.rotateZ(randomTilt);
             }
         }
         return rotation;

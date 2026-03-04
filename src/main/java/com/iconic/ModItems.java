@@ -1,6 +1,9 @@
 package com.iconic;
 
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroups;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -13,11 +16,12 @@ public class ModItems {
             RegistryKeys.ITEM, Identifier.of(Iconic.MOD_ID, "chalk")
     );
 
+    // Просто создаем предмет, логика подсказки теперь внутри класса ChalkItem
     public static final Item CHALK = new ChalkItem(
             new Item.Settings().registryKey(CHALK_KEY).maxDamage(128)
     );
 
-    // --- РЕГИСТРИРУЕМ НАШИ 15 РАМОК ---
+    // --- РЕГИСТРИРУЕМ РАМКИ ---
     public static final Item WHITE_FRAME = registerFrame("white_frame");
     public static final Item ORANGE_FRAME = registerFrame("orange_frame");
     public static final Item MAGENTA_FRAME = registerFrame("magenta_frame");
@@ -33,8 +37,8 @@ public class ModItems {
     public static final Item BROWN_FRAME = registerFrame("brown_frame");
     public static final Item GREEN_FRAME = registerFrame("green_frame");
     public static final Item RED_FRAME = registerFrame("red_frame");
+    public static final Item BLACK_FRAME = registerFrame("black_frame");
 
-    // Удобный метод для быстрой регистрации предметов без свойств (как обычный уголь или палка)
     private static Item registerFrame(String name) {
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Iconic.MOD_ID, name));
         return Registry.register(Registries.ITEM, key, new Item(new Item.Settings().registryKey(key)));
@@ -42,6 +46,11 @@ public class ModItems {
 
     public static void registerModItems() {
         Registry.register(Registries.ITEM, CHALK_KEY, CHALK);
-        Iconic.LOGGER.info("Iconic Mod: Chalk and Frames registered successfully.");
+
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
+            content.addAfter(Items.SHEARS, CHALK);
+        });
+
+        Iconic.LOGGER.info("Iconic Mod: Items registered successfully.");
     }
 }
