@@ -8,19 +8,40 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class ModItems {
-    // Создаем ключ заранее (обязательно для 1.21.1)
+
     public static final RegistryKey<Item> CHALK_KEY = RegistryKey.of(
-            RegistryKeys.ITEM,
-            Identifier.of(Iconic.MOD_ID, "chalk")
+            RegistryKeys.ITEM, Identifier.of(Iconic.MOD_ID, "chalk")
     );
 
-    // Создаем предмет с привязкой к ключу и прочностью 64 использования
     public static final Item CHALK = new ChalkItem(
             new Item.Settings().registryKey(CHALK_KEY).maxDamage(128)
     );
 
+    // --- РЕГИСТРИРУЕМ НАШИ 15 РАМОК ---
+    public static final Item WHITE_FRAME = registerFrame("white_frame");
+    public static final Item ORANGE_FRAME = registerFrame("orange_frame");
+    public static final Item MAGENTA_FRAME = registerFrame("magenta_frame");
+    public static final Item LIGHT_BLUE_FRAME = registerFrame("light_blue_frame");
+    public static final Item YELLOW_FRAME = registerFrame("yellow_frame");
+    public static final Item LIME_FRAME = registerFrame("lime_frame");
+    public static final Item PINK_FRAME = registerFrame("pink_frame");
+    public static final Item GRAY_FRAME = registerFrame("gray_frame");
+    public static final Item LIGHT_GRAY_FRAME = registerFrame("light_gray_frame");
+    public static final Item CYAN_FRAME = registerFrame("cyan_frame");
+    public static final Item PURPLE_FRAME = registerFrame("purple_frame");
+    public static final Item BLUE_FRAME = registerFrame("blue_frame");
+    public static final Item BROWN_FRAME = registerFrame("brown_frame");
+    public static final Item GREEN_FRAME = registerFrame("green_frame");
+    public static final Item RED_FRAME = registerFrame("red_frame");
+
+    // Удобный метод для быстрой регистрации предметов без свойств (как обычный уголь или палка)
+    private static Item registerFrame(String name) {
+        RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, Identifier.of(Iconic.MOD_ID, name));
+        return Registry.register(Registries.ITEM, key, new Item(new Item.Settings().registryKey(key)));
+    }
+
     public static void registerModItems() {
         Registry.register(Registries.ITEM, CHALK_KEY, CHALK);
-        Iconic.LOGGER.info("Iconic Mod: Chalk registered successfully.");
+        Iconic.LOGGER.info("Iconic Mod: Chalk and Frames registered successfully.");
     }
 }

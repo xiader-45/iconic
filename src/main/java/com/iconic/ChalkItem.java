@@ -40,28 +40,39 @@ public class ChalkItem extends Item {
         Direction side = context.getSide();
         BlockState state = world.getBlockState(pos);
 
-        double offset = 0.501;
         Vec3d spawnPos = Vec3d.ofCenter(pos).add(
-                side.getOffsetX() * offset,
-                side.getOffsetY() * offset,
-                side.getOffsetZ() * offset
+                side.getOffsetX() * Iconic.CHALK_OFFSET,
+                side.getOffsetY() * Iconic.CHALK_OFFSET,
+                side.getOffsetZ() * Iconic.CHALK_OFFSET
         );
 
         Box searchBox = Box.of(spawnPos, 0.1, 0.1, 0.1);
+
+        // Фикс анимации для стирания
         List<DisplayEntity.ItemDisplayEntity> existingDisplays = world.getEntitiesByClass(
                 DisplayEntity.ItemDisplayEntity.class,
                 searchBox,
-                entity -> entity.getCommandTags().contains("iconic_chalk")
+                entity -> world.isClient() || entity.getCommandTags().contains("iconic_chalk")
         );
 
-        // --- ЛОГИКА СТИРАНИЯ ---
         if (player.isSneaking()) {
             if (!existingDisplays.isEmpty()) {
                 if (!world.isClient()) {
-                    existingDisplays.get(0).discard();
+                    existingDisplays.getFirst().discard();
 
-                    // Новый, идеальный звук стирания (археологическая кисть)
+                    List<DisplayEntity.ItemDisplayEntity> bgs = world.getEntitiesByClass(
+                            DisplayEntity.ItemDisplayEntity.class, searchBox,
+                            e -> e.getCommandTags().contains("iconic_chalk_bg"));
+                    if (!bgs.isEmpty()) {
+                        bgs.getFirst().discard();
+                    }
+
                     world.playSound(null, pos, SoundEvents.ITEM_BRUSH_BRUSHING_GENERIC, SoundCategory.BLOCKS, 1.0F, 1.0F);
+
+                    if (world instanceof ServerWorld serverWorld) {
+                        serverWorld.spawnParticles(ParticleTypes.WHITE_ASH, spawnPos.x, spawnPos.y, spawnPos.z,
+                                10, 0.15, 0.15, 0.15, 0.05);
+                    }
                 }
                 return ActionResult.SUCCESS;
             }
@@ -99,23 +110,25 @@ public class ChalkItem extends Item {
 
         itemDisplay.refreshPositionAndAngles(spawnPos.x, spawnPos.y, spawnPos.z, 0, 0);
 
+        float randomTilt = (world.getRandom().nextFloat() - 0.5f) * 0.4f;
+
         itemDisplay.setTransformation(new AffineTransformation(
                 null,
-                getRotationForSide(side, playerFacing),
+                getRotationForSide(side, playerFacing, randomTilt),
                 new Vector3f(0.7f, 0.7f, 0.001f),
                 null
         ));
 
         itemDisplay.addCommandTag("iconic_chalk");
         itemDisplay.addCommandTag("chalk_dir_" + side.name());
+        itemDisplay.addCommandTag("chalk_tilt_" + randomTilt);
+        itemDisplay.addCommandTag("chalk_facing_" + playerFacing.name());
 
         world.spawnEntity(itemDisplay);
 
-        // --- ЭФФЕКТЫ РИСОВАНИЯ ---
         world.playSound(null, pos, SoundEvents.BLOCK_CALCITE_PLACE, SoundCategory.BLOCKS, 1.0F, 1.2F);
 
         if (world instanceof ServerWorld serverWorld) {
-            // Увеличили количество до 25 и добавили скорость 0.05, чтобы пыль красиво разлеталась
             serverWorld.spawnParticles(ParticleTypes.WHITE_ASH, spawnPos.x, spawnPos.y, spawnPos.z,
                     25, 0.15, 0.15, 0.15, 0.05);
         }
@@ -125,13 +138,13 @@ public class ChalkItem extends Item {
         return ActionResult.SUCCESS;
     }
 
-    private Quaternionf getRotationForSide(Direction side, Direction playerFacing) {
+    private Quaternionf getRotationForSide(Direction side, Direction playerFacing, float randomTilt) {
         Quaternionf rotation = new Quaternionf();
         switch (side) {
-            case NORTH -> rotation.rotationY(0);
-            case SOUTH -> rotation.rotationY((float) Math.toRadians(180));
-            case EAST -> rotation.rotationY((float) Math.toRadians(270));
-            case WEST -> rotation.rotationY((float) Math.toRadians(90));
+            case NORTH -> rotation.rotationY(0).rotateZ(randomTilt);
+            case SOUTH -> rotation.rotationY((float) Math.toRadians(180)).rotateZ(randomTilt);
+            case EAST -> rotation.rotationY((float) Math.toRadians(270)).rotateZ(randomTilt);
+            case WEST -> rotation.rotationY((float) Math.toRadians(90)).rotateZ(randomTilt);
             case UP -> {
                 rotation.rotationX((float) Math.toRadians(90));
                 switch (playerFacing) {
@@ -140,6 +153,7 @@ public class ChalkItem extends Item {
                     case SOUTH -> rotation.rotateZ(0);
                     case WEST -> rotation.rotateZ((float) Math.toRadians(90));
                 }
+                rotation.rotateZ(randomTilt);
             }
             case DOWN -> {
                 rotation.rotationX((float) Math.toRadians(-90));
@@ -149,6 +163,7 @@ public class ChalkItem extends Item {
                     case SOUTH -> rotation.rotateZ((float) Math.toRadians(180));
                     case WEST -> rotation.rotateZ((float) Math.toRadians(90));
                 }
+                rotation.rotateZ(randomTilt);
             }
         }
         return rotation;
