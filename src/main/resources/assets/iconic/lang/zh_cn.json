@@ -1,5 +1,7 @@
 {
   "item.iconic.chalk": "粉笔",
-  "item.iconic.chalk.tooltip": "Shift + 右键: 擦除绘画",
+  "item.iconic.chalk.tooltip.1": "一手拿粉笔，另一手拿任意物品",
+  "item.iconic.chalk.tooltip.2": "对方块按下 §f右键§7 以进行绘画",
+  "item.iconic.chalk.tooltip.3": "按下 §fShift + 右键§7 以擦除",
   "message.iconic.empty_offhand": "请在另一只手中持任意物品以使用粉笔绘画"
 }

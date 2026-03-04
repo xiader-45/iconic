@@ -14,7 +14,9 @@ public class IconicClient implements ClientModInitializer {
         // Здесь мы регистрируем всё, что связано ТОЛЬКО с визуалом игрока
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             if (stack.isOf(ModItems.CHALK)) {
-                lines.add(Text.translatable("item.iconic.chalk.tooltip").formatted(Formatting.GRAY));
+                lines.add(Text.translatable("item.iconic.chalk.tooltip.1").formatted(Formatting.GRAY));
+                lines.add(Text.translatable("item.iconic.chalk.tooltip.2").formatted(Formatting.GRAY));
+                lines.add(Text.translatable("item.iconic.chalk.tooltip.3").formatted(Formatting.GRAY));
             }
         });
 

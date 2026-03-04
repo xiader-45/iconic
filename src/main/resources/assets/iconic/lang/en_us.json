@@ -1,5 +1,7 @@
 {
   "item.iconic.chalk": "Chalk",
-  "item.iconic.chalk.tooltip": "Shift + RMB: erase drawing",
+  "item.iconic.chalk.tooltip.1": "Hold Chalk in one hand and any item in the other",
+  "item.iconic.chalk.tooltip.2": "Press §fRMB§7 on a block to draw",
+  "item.iconic.chalk.tooltip.3": "Press §fShift + RMB§7 to erase",
   "message.iconic.empty_offhand": "To draw with chalk, hold any item in your other hand"
 }

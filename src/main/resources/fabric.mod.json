@@ -3,9 +3,12 @@
   "id": "iconic",
   "version": "${version}",
   "name": "Iconic",
-  "description": "",
-  "authors": [],
-  "contact": {},
+  "description": "A handy mod for chest marking and decoration that lets you apply images of any item from your hand directly onto block surfaces with a single click!",
+  "authors": ["xiader45"],
+  "contact": {
+    "homepage": "https://github.com/xiader-45/iconic",
+    "sources": "https://github.com/xiader-45/iconic"
+  },
   "license": "All-Rights-Reserved",
   "icon": "assets/iconic/icon.png",
   "environment": "*",

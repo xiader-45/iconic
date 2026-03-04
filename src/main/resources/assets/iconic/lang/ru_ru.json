@@ -1,5 +1,7 @@
 {
   "item.iconic.chalk": "Мелок",
-  "item.iconic.chalk.tooltip": "Shift + ПКМ: стереть рисунок",
+  "item.iconic.chalk.tooltip.1": "Возьмите в руки Мелок, а в другую любой предмет",
+  "item.iconic.chalk.tooltip.2": "Нажмите §fПКМ§7 по блоку, чтобы нанести рисунок",
+  "item.iconic.chalk.tooltip.3": "Нажмите §fShift + ПКМ§7, чтобы стереть",
   "message.iconic.empty_offhand": "Чтобы рисовать мелком, возьмите в другую руку любой предмет"
 }
