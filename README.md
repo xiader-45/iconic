@@ -1,0 +1,18 @@
+![prew](https://cdn.modrinth.com/data/cached_images/9d0f8439c5ee1fcf2bc4995615354f5d932dc688.png)
+[![Mod Loader](https://img.shields.io/badge/Mod_Loader-Fabric-f0eddb?style=flat-square)](https://fabricmc.net/)
+![Environment](https://img.shields.io/badge/Environment-Server_%26_Client-green?style=flat-square)
+[![GitHub](https://img.shields.io/badge/Source-GitHub-181717?style=flat-square&logo=github)](https://github.com/xiader-45/iconic)
+[![Modrinth](https://img.shields.io/badge/Iconic-Modrinth-00AF5C?style=flat-square&logo=modrinth)](https://modrinth.com/mod/iconic-iconic)
+[![CurseForge](https://img.shields.io/badge/Iconic-CurseForge-f38231?style=flat-square&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/iconic-iconic)
+
+![chalk](https://cdn.modrinth.com/data/cached_images/192a58a288c2900c7333ec4d52e59c56a40692eb.png)
+
+![craft](https://cdn.modrinth.com/data/cached_images/965019f2d75d8b321c1a7b6a166261edbae7ae6f.png)
+
+Crafted with **2 calcite**. Hold chalk in your main hand and the desired block/item in your off-hand **to paint** its texture onto a surface.
+
+![glow](https://cdn.modrinth.com/data/cached_images/7c5e85a76234598861eaa4d2be689f38a87a994d.png)
+
+Enhance your art: Use a **Glow Ink Sac** to add an **illumination effect**, or apply any Dye to **recolor** the texture on the surface
+
+![mod](https://cdn.modrinth.com/data/cached_images/769f684600b086ec4d90c5850ea80400b7c2e3d9.gif)
