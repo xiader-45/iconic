@@ -2,8 +2,8 @@
 [![Mod Loader](https://img.shields.io/badge/Mod_Loader-Fabric-f0eddb?style=flat-square)](https://fabricmc.net/)
 ![Environment](https://img.shields.io/badge/Environment-Server_%26_Client-green?style=flat-square)
 [![GitHub](https://img.shields.io/badge/Source-GitHub-181717?style=flat-square&logo=github)](https://github.com/xiader-45/iconic)
-[![Modrinth](https://img.shields.io/badge/Iconic-Modrinth-00AF5C?style=flat-square&logo=modrinth)](https://modrinth.com/mod/iconic-iconic)
-[![CurseForge](https://img.shields.io/badge/Iconic-CurseForge-f38231?style=flat-square&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/iconic-iconic)
+[![Modrinth](https://img.shields.io/badge/Iconic-Modrinth-00AF5C?style=flat-square&logo=modrinth)](https://modrinth.com/mod/iconic-fabric)
+[![CurseForge](https://img.shields.io/badge/Iconic-CurseForge-f38231?style=flat-square&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/iconic)
 
 ![chalk](https://cdn.modrinth.com/data/cached_images/192a58a288c2900c7333ec4d52e59c56a40692eb.png)
 
