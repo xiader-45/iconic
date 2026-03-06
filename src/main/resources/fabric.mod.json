@@ -20,13 +20,7 @@
       "com.iconic.Iconic"
     ]
   },
-  "mixins": [
-    "iconic.mixins.json",
-    {
-      "config": "iconic.client.mixins.json",
-      "environment": "client"
-    }
-  ],
+  
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
